@@ -1,0 +1,32 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "real_estate_hybrid_app"
+version = "0.0.1"
+description = "This repository contains three main features: price prediction, a data dashboard, and a recommendation system."
+authors = [
+  { name = "hunter" },
+]
+
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    
+]
+requires-python = "~=3.10.0"
+
+
+[tool.ruff]
+line-length = 99
+src = ["real_estate_hybrid_app"]
+include = ["pyproject.toml", "real_estate_hybrid_app/**/*.py"]
+
+[tool.ruff.lint]
+extend-select = ["I"]  # Add import sorting
+
+[tool.ruff.lint.isort]
+known-first-party = ["real_estate_hybrid_app"]
+force-sort-within-sections = true
+
