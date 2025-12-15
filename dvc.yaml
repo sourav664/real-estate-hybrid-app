@@ -11,3 +11,15 @@ stages:
     outs:
       - data/interim/train.csv
       - data/interim/test.csv
+
+  data_preprocessing:
+    cmd: python src/data_preprocessing.py
+    deps:
+      - data/interim/train.csv
+      - data/interim/test.csv
+      - src/data_preprocessing.py
+
+    outs:
+      - data/processed/train_trans.csv
+      - data/processed/test_trans.csv
+      - models/preprocesser.joblib
