@@ -1,7 +1,7 @@
 numpy
 pandas
 scikit-learn
-mlflow
+mlflow==2.22.0
 dagshub
 dvc
 lightgbm
@@ -12,3 +12,5 @@ xgboost
 awscli
 matplotlib
 seaborn
+streamlit
+plotly
