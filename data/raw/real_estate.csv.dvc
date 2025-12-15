@@ -1,0 +1,5 @@
+outs:
+- md5: 97e95f3e4930cda8ce0440697c16b65c
+  size: 12094150
+  hash: md5
+  path: real_estate.csv

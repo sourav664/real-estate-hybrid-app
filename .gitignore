@@ -1,5 +1,5 @@
 # Data
-/data/
+# /data/
 
 # Mac OS-specific storage files
 .DS_Store
@@ -145,13 +145,13 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-# .env
-# .venv
-# env/
-# venv/
-# ENV/
-# env.bak/
-# venv.bak/
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
 # Spyder project settings
 .spyderproject
