@@ -35,3 +35,14 @@ stages:
     outs:
       - models/model.joblib
       - models/log_transformer.joblib
+
+  evaluate:
+    cmd: python src/modeling/evaluation.py
+    deps:
+      - data/processed/train_trans.csv
+      - data/processed/test_trans.csv
+      - models/model.joblib
+      - src/modeling/evaluation.py
+
+    outs:
+      - run_information.json

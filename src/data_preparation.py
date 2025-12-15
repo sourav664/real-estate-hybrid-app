@@ -49,6 +49,7 @@ def load_data(data_path: Path, columns: list=['propertytype',
     try:
         df = pd.read_csv(data_path, usecols=columns)
         df.drop_duplicates(inplace=True)
+
         
     except FileNotFoundError:
         logger.error("The file to load does not exist")
