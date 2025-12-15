@@ -1,0 +1,13 @@
+stages:
+  data_preparation:
+    cmd: python src/data_preparation.py
+    params:
+      - Data_Preparation.test_size
+      - Data_Preparation.random_state
+    deps:
+      - data/raw/real_estate.csv
+      - src/data_preparation.py
+
+    outs:
+      - data/interim/train.csv
+      - data/interim/test.csv

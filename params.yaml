@@ -1,0 +1,13 @@
+Data_Preparation:
+  test_size: 0.20
+  random_state: 49
+
+LightGBM:
+    n_estimators: 497
+    max_depth: 18
+    learning_rate: 0.3411567207702695
+    subsample: 0.8211191192401062
+    min_child_weight: 9
+    min_split_gain:  0.001980136353254995
+    reg_lambda: 66.24757875556628
+    n_jobs: -1
