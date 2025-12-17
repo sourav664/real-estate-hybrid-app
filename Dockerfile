@@ -1,6 +1,6 @@
-# =====================
+# ====================
 # Builder stage
-# =====================
+# ====================
 FROM python:3.12-slim-bookworm AS builder
 
 WORKDIR /app
