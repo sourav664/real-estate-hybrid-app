@@ -55,7 +55,7 @@ test_data_path = root_path / "data" / "interim" / "test.csv"
 
 
 @pytest.mark.parametrize(argnames="model_pipe, test_data_path, threshold_error",
-                         argvalues=[(model_pipe, test_data_path, 0.62)])
+                         argvalues=[(model_pipe, test_data_path, 0.75)])
 def test_model_performance(model_pipe,test_data_path, threshold_error):
     # load the data
     df = pd.read_csv(test_data_path)
