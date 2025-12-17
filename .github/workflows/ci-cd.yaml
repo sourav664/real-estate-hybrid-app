@@ -51,15 +51,6 @@ jobs:
         run: |
             python promote_model.py
 
-      - name: Run Appllication
-        run: |
-          nohup streamlit run my_app/home.py --server.port 8000 &
-          sleep 30 
-
-      - name: Stop Streamlit app
-        run: |
-          pkill -f "streamlit run"
-
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2

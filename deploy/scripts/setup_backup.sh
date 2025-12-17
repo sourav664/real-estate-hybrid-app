@@ -1,23 +1,28 @@
 #!/bin/bash
 set -e
 
+LOG_FILE="/home/ubuntu/setup_backup.log"
+exec > "$LOG_FILE" 2>&1
+
 echo "Setting up S3 backup cron job..."
 
-AUDIT_DIR="/var/mlops/audit"
-S3_BUCKET="s3://mlops-audit-backups/audit"
-LOG_FILE="/var/log/mlops_s3_backup.log"
-
 # Ensure audit directory exists
-mkdir -p $AUDIT_DIR
+mkdir -p /var/mlops/audit
 
-# Full path to aws (important for cron)
-AWS_BIN="/usr/local/bin/aws"
+CRON_JOB="0 2 * * * aws s3 sync /var/mlops/audit s3://mlops-audit-backups/audit"
 
-CRON_JOB="*/10 * * * * $AWS_BIN s3 sync $AUDIT_DIR $S3_BUCKET >> $LOG_FILE 2>&1"
+# Load existing crontab safely
+crontab -l 2>/dev/null > /tmp/current_cron || true
 
+# Add cron job only if not present
+if ! grep -Fxq "$CRON_JOB" /tmp/current_cron; then
+    echo "$CRON_JOB" >> /tmp/current_cron
+    crontab /tmp/current_cron
+    echo "Cron job added."
+else
+    echo "Cron job already exists."
+fi
 
-# Add cron job if not already present
-(crontab -l 2>/dev/null | grep -F "$S3_BUCKET") || \
-(crontab -l 2>/dev/null; echo "$CRON_JOB") | crontab -
+rm -f /tmp/current_cron
 
-echo "S3 backup cron job configured."
+echo "S3 backup cron job setup completed."
