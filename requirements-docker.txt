@@ -1,0 +1,12 @@
+numpy
+pandas
+matplotlib
+scikit-learn
+joblib
+streamlit
+dagshub
+mlflow==2.22.0
+lightgbm
+seaborn
+plotly
+category_encoders

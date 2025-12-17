@@ -40,8 +40,8 @@ class AnalysisApp:
         if select_region == 'overall':
             group_df = self.new_df.groupby('locality')[['price', 'price_per_sqft', 'superbuiltupareasqft', 'latitude', 'longitude']].mean()
         else:
-            filtered_df = self.new_df[self.new_df['regions'] == select_region]
-            group_df = filtered_df.groupby('localities')[['price', 'price_per_sqft', 'superbuiltupareasqft', 'latitude', 'longitude']].mean()
+            filtered_df = self.new_df[self.new_df['region'] == select_region]
+            group_df = filtered_df.groupby('locality')[['price', 'price_per_sqft', 'superbuiltupareasqft', 'latitude', 'longitude']].mean()
         
         fig = px.scatter_map(group_df, lat="latitude", lon="longitude", color="price_per_sqft", size='superbuiltupareasqft',
                                 color_continuous_scale=px.colors.cyclical.IceFire, zoom=10,

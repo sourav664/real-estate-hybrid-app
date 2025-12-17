@@ -2,9 +2,34 @@ import streamlit as st
 import pandas as pd
 import joblib
 from pathlib import Path
-import matplotlib.pyplot as plt
 import plotly.express as px
-import plotly.graph_objects as go
+import mlflow
+import dagshub
+import json
+from mlflow import MlflowClient
+from sklearn.pipeline import Pipeline
+from sklearn import set_config
+
+set_config(transform_output="pandas")
+
+def init_mlflow_once():
+    if "mlflow_initialized" not in st.session_state:
+        dagshub.init(
+            repo_owner="sourav664",
+            repo_name="real-estate-hybrid-app",
+            mlflow=True
+        )
+        mlflow.set_tracking_uri(
+            "https://dagshub.com/sourav664/real-estate-hybrid-app.mlflow"
+        )
+        st.session_state.mlflow_initialized = True
+
+
+init_mlflow_once()
+
+
+
+
 
 
 FLOOR_LIMITS = {
@@ -16,8 +41,6 @@ FLOOR_LIMITS = {
 }
 
 df = pd.read_csv(Path("data/raw/real_estate.csv"))
-# preprocessor = joblib.load(Path("models/preprocesser.joblib"))
-# model = joblib.load(Path("models/model.joblib"))
 
 def get_similar_properties(
     df,
@@ -56,17 +79,33 @@ st.set_page_config(
 # ---------------------------
 # Load Model
 # ---------------------------
-@st.cache_resource
-def load_model():
-    return joblib.load("models/model.joblib")
-
-model = load_model()
 
 @st.cache_resource
-def load_preprocessor():
-    return joblib.load("models/preprocesser.joblib")
+def load_pipeline():
+    # load preprocessor
+    preprocessor = joblib.load("models/preprocesser.joblib")
 
-preprocessor = load_preprocessor()
+    # load MLflow model
+    with open("run_information.json", "r") as f:
+        model_name = json.load(f)["model_name"]
+
+    model = mlflow.sklearn.load_model(
+        f"models:/{model_name}/Production"
+    )
+
+    # build pipeline
+    pipeline = Pipeline([
+        ("preprocess", preprocessor),
+        ("regressor", model)
+    ])
+
+    return pipeline
+
+
+model_pipe = load_pipeline()
+
+
+
 # ---------------------------
 # Header
 # ---------------------------
@@ -188,17 +227,16 @@ if predict_btn:
         "totalfloornumber": totalfloornumber
           }])
         
-        input_df = preprocessor.transform(input_data)
-        base_price = model.predict(input_df)[0]
-        lower_bound = round(base_price,2) - 0.25
-        upper_bound = round(base_price,2) + 0.25
+        # input_df = preprocessor.transform(input_data)
+        prediction = model_pipe.predict(input_data)[0]
+        
 
     st.success("Prediction generated successfully")
 
     # Price Metric
     st.metric(
         label="📈 Estimated Property Price",
-        value=f"₹ {base_price:,.2f} crores",
+        value=f"₹ {prediction:,.2f} crores",
     )
 
     st.divider()
@@ -249,7 +287,7 @@ if predict_btn:
 
     # Add vertical line for predicted price
     fig.add_vline(
-        x=base_price,
+        x=prediction,
         line_width=3,
         line_dash="dash",
         annotation_text="Predicted Price",
@@ -275,7 +313,7 @@ if predict_btn:
         annotation_text="Market Average",
         annotation_position="top"
     )
-    diff = base_price - market_avg
+    diff = prediction - market_avg
     TOLERANCE = 0.01  # 0.01 crore ≈ 1 lakh
 
     if abs(diff) < TOLERANCE:
