@@ -12,6 +12,35 @@ from sklearn import set_config
 
 set_config(transform_output="pandas")
 
+from datetime import datetime
+
+PREDICTION_LOG_PATH = "audit/predictions.csv"
+
+
+def save_prediction_to_csv(input_df, prediction):
+    # copy input data
+    record = input_df.copy()
+
+    # add prediction column
+    record["predicted_price"] = prediction
+
+    # add timestamp
+    record["timestamp"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # create folder if not exists
+    Path("audit").mkdir(exist_ok=True)
+
+    # append to CSV
+    record.to_csv(
+        PREDICTION_LOG_PATH,
+        mode="a",
+        header=not Path(PREDICTION_LOG_PATH).exists(),
+        index=False
+    )
+
+
+
+
 def init_mlflow_once():
     if "mlflow_initialized" not in st.session_state:
         dagshub.init(
@@ -103,6 +132,33 @@ def load_pipeline():
 
 
 model_pipe = load_pipeline()
+
+
+@st.cache_resource
+def get_model_r2_score():
+    client = MlflowClient()
+
+    with open("run_information.json", "r") as f:
+        model_name = json.load(f)["model_name"]
+
+    versions = client.get_latest_versions(
+        name=model_name,
+        stages=["Production"]
+    )
+
+    if not versions:
+        return None
+
+    run_id = versions[0].run_id
+    run = client.get_run(run_id)
+
+    # try multiple possible metric names
+    for key in ["r2_score", "r2", "test_r2", "val_r2"]:
+        if key in run.data.metrics:
+            return run.data.metrics[key]
+
+    return None
+
 
 
 
@@ -229,6 +285,7 @@ if predict_btn:
         
         # input_df = preprocessor.transform(input_data)
         prediction = model_pipe.predict(input_data)[0]
+        save_prediction_to_csv(input_data, prediction)
         
 
     st.success("Prediction generated successfully")
@@ -350,11 +407,11 @@ if predict_btn:
     # Model Information
     # ---------------------------
     st.subheader("📌 Model Information")
-    st.write("""
+    st.write(f"""
             • **Model:** LightGBM Regressor  
             • **Training Data:** 31,784 properties  
             • **Test Data:** 7,946 properties  
-            • **R² Score:** 0.89 (test set)  
+            • **R² Score:** {get_model_r2_score():.2f} (test set)  
             """)
 
 

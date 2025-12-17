@@ -35,7 +35,8 @@ COPY ./data/raw/real_estate.csv ./data/raw/real_estate.csv
 
 COPY ./my_app/ ./my_app/
 COPY ./models/ ./models/
-COPY ./run_information.json ./
+COPY ./run_information.json .
+
 
 ENV PORT=8000
 EXPOSE 8000

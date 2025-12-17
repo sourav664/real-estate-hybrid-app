@@ -1,0 +1,15 @@
+name: my-ml-app
+
+services:
+   real-estate-app:
+      build: .
+      container_name: real-estate
+      env_file: .env
+
+      ports:
+        - "8000:8000"
+      
+      volumes:
+        - type: bind
+          source: ./audit/
+          target: /app/audit
