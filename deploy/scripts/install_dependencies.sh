@@ -5,8 +5,27 @@ export DEBIAN_FRONTEND=noninteractive
 echo "Updating system..."
 apt-get update -y
 
+# Remove conflicting packages if they exist
+echo "Removing conflicting packages..."
+apt-get remove -y docker.io docker-doc docker-compose podman-docker containerd runc 2>/dev/null || true
+
 echo "Installing base packages..."
-apt-get install -y docker.io docker-compose-plugin unzip curl cron
+apt-get install -y unzip curl cron ca-certificates
+
+# Check if Docker is already installed from official repo
+if docker --version 2>/dev/null | grep -q "Docker version"; then
+    echo "✓ Docker already installed"
+    docker --version
+else
+    echo "Installing Docker from official repository..."
+    
+    # Install Docker CE (Community Edition) from official repo
+    # Since you already have docker repo added, just install the packages
+    apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    
+    echo "✓ Docker installed"
+    docker --version
+fi
 
 echo "Starting services..."
 systemctl start docker
