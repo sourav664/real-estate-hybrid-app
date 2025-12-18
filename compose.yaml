@@ -4,8 +4,9 @@ services:
   demand-prediction:
     image: 957417441966.dkr.ecr.ap-south-1.amazonaws.com/real-estate-streamlit:latest
     container_name: real-estate
-    env_file: 
-      - .env
+    environment:
+      DAGSHUB_USER_TOKEN: "7194e08087f7cfb953d8913965a4c305ae5aa7b1"
+
 
     ports:
       - "8000:8000"
