@@ -19,4 +19,4 @@ hooks:
   ApplicationStart:
     - location: deploy/scripts/start_docker.sh
       timeout: 300
-      runas: root # ✅ Correct
+      runas: ubuntu # ✅ Correct
