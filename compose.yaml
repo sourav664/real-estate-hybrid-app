@@ -4,10 +4,22 @@ services:
   demand-prediction:
     image: 957417441966.dkr.ecr.ap-south-1.amazonaws.com/real-estate-streamlit:latest
     container_name: real-estate
-    env_file: .env
+    env_file: 
+      - .env
 
     ports:
       - "8000:8000"
 
     volumes:
       - /var/mlops/audit:/app/audit
+
+    restart: unless-stopped
+    
+    networks:
+      - real-estate-network
+
+networks:
+  real-estate-network:
+    driver: bridge
+
+   
